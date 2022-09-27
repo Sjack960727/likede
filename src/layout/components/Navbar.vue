@@ -1,32 +1,18 @@
 <template>
   <div class="navbar">
     <!-- <hamburger :is-active="sidebar.opened" class="hamburger-container" @toggleClick="toggleSideBar" /> -->
-
     <!-- <breadcrumb class="breadcrumb-container" /> -->
 
+    <div class="logo"> <img src="../../assets/common/logoone.png" alt=""></div>
     <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="click">
-        <div class="avatar-wrapper">
-          <img :src="avatar+'?imageView2/1/w/80/h/80'" class="user-avatar">
-          <i class="el-icon-caret-bottom" />
-        </div>
-        <el-dropdown-menu slot="dropdown" class="user-dropdown">
-          <router-link to="/">
-            <el-dropdown-item>
-              Home
-            </el-dropdown-item>
-          </router-link>
-          <a target="_blank" href="https://github.com/PanJiaChen/vue-admin-template/">
-            <el-dropdown-item>Github</el-dropdown-item>
-          </a>
-          <a target="_blank" href="https://panjiachen.github.io/vue-element-admin-site/#/">
-            <el-dropdown-item>Docs</el-dropdown-item>
-          </a>
-          <el-dropdown-item divided @click.native="logout">
-            <span style="display:block;">Log Out</span>
-          </el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
+      <el-row>
+        <el-col :span="5"><img src="../../assets/common/user.png" alt="" class="avatar"></el-col>
+        <el-col :span="14"><p>欢迎您,admin</p></el-col>
+        <el-col :span="5" style="vertical-align: middle;">  <el-tooltip class="item" effect="dark" content="退出登录" placement="bottom">
+          <el-button @click="logout">退出<i class="el-icon-caret-bottom" /> </el-button>
+        </el-tooltip></el-col>
+      </el-row>
+
     </div>
   </div>
 </template>
@@ -47,11 +33,15 @@ export default {
       'avatar'
     ])
   },
+  created() {
+    // this.$store.dispatch('user/getUserInfo')
+  },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },
     async logout() {
+      console.log(111)
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     }
@@ -61,82 +51,63 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  height: 60px;
   overflow: hidden;
   position: fixed;
-  left: -54px;
+  left: 0;
   width: 100%;
   background: #fff;
   background-image: url('~@/assets/common/backgroundone.png');
   background-size: cover;
   background-repeat: no-repeat;
   box-shadow: 0 1px 4px rgba(0,21,41,.08);
-
-  .hamburger-container {
-    line-height: 46px;
-    height: 100%;
-    float: left;
-    cursor: pointer;
-    transition: background .3s;
-    -webkit-tap-highlight-color:transparent;
-
-    &:hover {
-      background: rgba(0, 0, 0, .025)
-    }
+.logo{
+  float: left;
+  line-height: 60px;
+  img{
+    margin-top: 10px;
+    margin-left: 15px;
+    width: 88px;
   }
 
-  .breadcrumb-container {
-    float: left;
-  }
-
+}
   .right-menu {
     float: right;
     height: 100%;
-    line-height: 50px;
-
-    &:focus {
-      outline: none;
+    width: 240px;
+    margin-right: 24px;
+    line-height: 60px;
+    display: flex;
+    .el-row{
+      width: 240px;
+      margin-right: 24px;
     }
-
-    .right-menu-item {
-      display: inline-block;
-      padding: 0 8px;
-      height: 100%;
+    .avatar{
+      line-height: 60px;
+      width: 35px;
+      height: 35px;
+      border-radius: 5px;
+       vertical-align: middle;
+    }
+    p{
+      vertical-align: middle;
+      line-height: 60px;
+      margin: 0;
+      margin-left: 10px;
+      color: #fff;
+      font-size: 16px;
+      font-family: -apple-system,BlinkMacSystemFont,Segoe UI,Helvetica Neue,Helvetica,PingFang SC,Hiragino Sans GB,Microsoft YaHei,Arial,sans-serif;
+    }
+    .el-button{
+      padding: 0;
       font-size: 18px;
-      color: #5a5e66;
-      vertical-align: text-bottom;
-
-      &.hover-effect {
-        cursor: pointer;
-        transition: background .3s;
-
-        &:hover {
-          background: rgba(0, 0, 0, .025)
-        }
-      }
-    }
-
-    .avatar-container {
-      margin-right: 30px;
-
-      .avatar-wrapper {
-        margin-top: 5px;
-        position: relative;
-
-        .user-avatar {
-          cursor: pointer;
-          width: 40px;
-          height: 40px;
-          border-radius: 10px;
-        }
-
-        .el-icon-caret-bottom {
-          cursor: pointer;
-          position: absolute;
-          right: -20px;
-          top: 25px;
-          font-size: 12px;
-        }
+      color: #fff;
+      background-color: transparent;
+      border: none;
+      vertical-align: middle;
+      cursor: pointer;
+      span{
+        margin-right: 100px;
       }
     }
   }

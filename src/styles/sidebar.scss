@@ -8,14 +8,14 @@
   }
 
   .sidebar-container {
-    // background: -webkit-linear-gradient(bottom, #cdd4ec, #dce2f0);
+    // background: -webkit-linear-gradient(bottom, #df64a2, #69e73f);
     transition: width 0.28s;
     width: $sideBarWidth !important;
     background-color: $menuBg;
     height: 100%;
     position: fixed;
     font-size: 0px;
-    top: 0;
+    top: 60px;
     bottom: 0;
     left: 0;
     z-index: 1001;
@@ -68,7 +68,15 @@
       border: none;
       height: 100%;
       width: 100% !important;
+      .el-submenu,.el-menu-item{
+        // color: #999!important;
+      }
     }
+   
+    .el-submenu,.el-menu-item.is-active{
+      color: #5f84ff!important
+    }
+
 
     // menu hover
     .submenu-title-noDropdown,
@@ -79,16 +87,16 @@
     }
 
     .is-active>.el-submenu__title {
-      color: $subMenuActiveText !important;
+      color: #5f84ff !important;
     }
 
     & .nest-menu .el-submenu>.el-submenu__title,
     & .el-submenu .el-menu-item {
       min-width: $sideBarWidth !important;
-      background-color: $subMenuBg !important;
+      background-color: #fff !important;
 
       &:hover {
-        background-color: $subMenuHover !important;
+        background-color: #fff !important;
       }
     }
   }

@@ -1,6 +1,14 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-
+import reportRouter from './modules/report'
+import policyRouter from './modules/policy'
+import orderRouter from './modules/order'
+import skuRouter from './modules/sku'
+import taskRouter from './modules/task'
+import nodeRouter from './modules/node'
+import vmRouter from './modules/vm'
+import userRouter from './modules/user'
+const asyncRouters = [taskRouter, nodeRouter, vmRouter, userRouter, skuRouter, policyRouter, orderRouter, reportRouter]
 Vue.use(Router)
 
 /* Layout */
@@ -51,7 +59,7 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
+      meta: { title: '帝可得', icon: '' }
     }]
   },
 
@@ -62,7 +70,8 @@ export const constantRoutes = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  // routes: constantRoutes
+  routes: [...constantRoutes, ...asyncRouters]
 })
 
 const router = createRouter()
