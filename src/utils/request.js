@@ -19,7 +19,7 @@ request.interceptors.request.use(config => {
       router.push('/login')
       return Promise.reject(new Error('token超时了'))
     }
-    config.headers['Authorization'] = `Bearer ${store.getters.token}`
+    config.headers['Authorization'] = `${store.getters.token}`
   }
   return config
 }, error => {
