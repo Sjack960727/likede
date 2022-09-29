@@ -15,7 +15,7 @@ const store = new Vuex.Store({
   },
   getters,
   plugins: [ceratePersistedState({
-    paths: ['user.token', 'user.userId'] })]
+    paths: ['user.token', 'user.userId', 'tokenTime'] })]
 })
 
 export default store

@@ -4,7 +4,8 @@ export default {
   state: {
     token: null,
     userId: null,
-    userInfo: {}
+    userInfo: {},
+    tokenTime: 0
   },
   mutations: {
     SET_TOKEN(state, payload) {
@@ -15,6 +16,9 @@ export default {
     },
     SET_USER_INFO(state, payload) {
       state.userInfo = payload
+    },
+    SET_TOKEN_TIME(state, time) {
+      state.tokenTime = time
     }
   },
   actions: {
@@ -24,10 +28,14 @@ export default {
       commit('SET_USER_ID', data.userId)
       commit('SET_TOKEN', data.token)
       commit('SET_USER_INFO', data)
+      commit('SET_TOKEN_TIME', +new Date())
     },
     async getUserInfo(context) {
       const res = await getUserInfo(context.state.userId)
       console.log(res)
+    },
+    logout(context) {
+      context.commit('SET_TOKEN')
     }
   }
 }
