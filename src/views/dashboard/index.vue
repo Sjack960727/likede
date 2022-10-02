@@ -152,11 +152,11 @@ export default {
   methods: {
     async getOrderAmount() {
       this.orderAmout = await getOrderAmount(this.start, this.end)
-      console.log(this.orderAmout)
+      // console.log(this.orderAmout)
     },
     async getOrderCount() {
       this.orderCount = await getOrderCount(this.start, this.end)
-      console.log(this.orderCount)
+      // console.log(this.orderCount)
     }
   }
 }
