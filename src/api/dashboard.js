@@ -26,6 +26,25 @@ export const getTaskReportInfo = (start, end) => {
   })
 }
 
-// 获取销售前几的商品
-// 基本信息
-// Path： /api/order-service/report/skuTop/:topValue/:start/:end
+export const getSkuTop = (topValue, start, end) => {
+  return request({
+    url: `/order-service/report/skuTop/${topValue}/${start}/${end}` })
+}
+
+export const getNodeCollect = () => {
+  return request({
+    url: '/vm-service/node/nodeCollect'
+  })
+}
+
+export const getRegionCollect = (start, end) => {
+  return request({
+    url: `/order-service/report/regionCollect/${start}/${end}`
+  })
+}
+
+export const getAmountCollect = (collectType, start, end) => {
+  return request({
+    url: `/order-service/report/amountCollect/${collectType}/${start}/${end}`
+  })
+}

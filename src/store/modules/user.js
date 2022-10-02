@@ -24,7 +24,7 @@ export default {
   actions: {
     async loginAction({ commit }, loginDate) {
       const { data } = await loginAPI(loginDate)
-      console.log(data)
+      // console.log(data)
       commit('SET_USER_ID', data.userId)
       commit('SET_TOKEN', data.token)
       commit('SET_USER_INFO', data)
