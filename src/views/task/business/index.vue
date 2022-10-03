@@ -26,7 +26,7 @@
         size="medium"
         icon="el-icon-circle-plus-outline"
         style="background: linear-gradient(135deg,#ff9743,#ff5e20);border:none"
-        @click="dialogVisible=true"
+        @click="addOrderShow=true"
       >新建</el-button>
       <el-button
         type="primary"
@@ -178,6 +178,9 @@ export default {
 <style scoped lang="scss">
   .orderbus {
     padding: 20px;
+    .el-button {
+    line-height: 1;
+    }
     .box-card {
       height: 80px;
       margin-bottom: 20px;
