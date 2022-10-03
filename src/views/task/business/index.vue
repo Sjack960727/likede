@@ -3,10 +3,10 @@
     <el-card class="box-card">
       <el-form :inline="true" :model="formInline" class="demo-form-inline" size="medium">
         <el-form-item label="工单编号">
-          <el-input v-model="formInline.user" placeholder="审批人" />
+          <el-input v-model="formInline.taskCode" placeholder="请输入" />
         </el-form-item>
         <el-form-item label="工单状态">
-          <el-select v-model="formInline.region" placeholder="活动区域">
+          <el-select v-model="formInline.status" placeholder="请选择" :clearable="true">
             <el-option
               v-for="item in oderStatus"
               :key="item.statusId"
@@ -26,12 +26,14 @@
         size="medium"
         icon="el-icon-circle-plus-outline"
         style="background: linear-gradient(135deg,#ff9743,#ff5e20);border:none"
+        @click="dialogVisible=true"
       >新建</el-button>
       <el-button
         type="primary"
         size="medium"
         class="allocationbtn"
         style="background-color: #fbf4f0;border:none;color: #655b56"
+        @click="orderSetShow=true"
       >工单配置</el-button>
 
       <!-- 表格 -->
@@ -79,6 +81,7 @@
           </template>
         </el-table-column>
       </el-table>
+      <!-- 分页组件 -->
       <page
         :total="totalCount"
         :page-size="getListData.pageSize"
@@ -86,21 +89,36 @@
         @changePageEvent="getOrderList"
       />
     </el-card>
+
+    <!-- 新建工单 -->
+    <add-new-order :dialog-visible.sync="addOrderShow" @refreshOrder="getOrderList" />
+
+    <!-- 工单配置 -->
+    <order-set ref="orderSetAlert" :dialog-visible.sync="orderSetShow" @refreshOrder="getOrderList" />
+
+    <!-- 查看详情 -->
+    <order-detail ref="orderDetail" :dialog-visible.sync="orderDetailShow" @refreshOrder="getOrderList" />
   </div>
 </template>
 
 <script>
-import { getOrderStatus, getOrderList } from '@/api/workorder'
+import { getOrderStatus, getOrderList, searchOrder } from '@/api/workorder'
 import page from './components/page.vue'
+import AddNewOrder from './components/AddNewOrder.vue'
+import OrderSet from './components/OrderSet.vue'
+import OrderDetail from './components/OrderDetail.vue'
 export default {
   components: {
-    page
+    page,
+    AddNewOrder,
+    OrderSet,
+    OrderDetail
   },
   data() {
     return {
       formInline: {
-        user: '',
-        region: ''
+        taskCode: '',
+        status: ''
       },
       getListData: {
         pageIndex: 1,
@@ -110,7 +128,10 @@ export default {
       totalCount: null,
       totalPage: null,
       oderStatus: [],
-      tableData: []
+      tableData: [],
+      addOrderShow: false,
+      orderSetShow: false,
+      orderDetailShow: false
     }
   },
   created() {
@@ -118,8 +139,15 @@ export default {
     this.getOrderList()
   },
   methods: {
-    onSubmit() {
-      console.log('submit!')
+    async onSubmit() {
+      const { data } = await searchOrder(this.formInline)
+      console.log(data)
+      this.tableData = data.currentPageRecords
+      this.tableData.forEach(item => {
+        item.createTime = item.createTime.replace('T', ' ')
+      })
+      this.totalCount = +data.totalCount
+      this.totalPage = data.totalPage
     },
     async getOrderStatus() {
       const { data } = await getOrderStatus()
@@ -133,9 +161,14 @@ export default {
       this.tableData = data.currentPageRecords
       this.tableData.forEach(item => {
         item.createTime = item.createTime.replace('T', ' ')
+        item.createType = item.createType === 0 ? '自动' : '手动'
       })
       this.totalCount = +data.totalCount
       this.totalPage = data.totalPage
+    },
+    ViewDetails(row) {
+      this.$refs.orderDetail.getWorkOrderDetail(row.taskId)
+      this.orderDetailShow = true
     }
   }
 
