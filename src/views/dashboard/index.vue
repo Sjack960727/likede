@@ -98,7 +98,7 @@
                 销售数据
                 <span
                   class="subtitle"
-                >{{ showStartTime }}~{{ showEndTime }}</span>
+                >{{ chartsTimeS }}~{{ chartsTimeE }}</span>
               </div>
               <div class="week-month-year">
                 <div class="item" :class="{isChecked:isChecked==1}" @click="getWeekData($event)">周</div>
@@ -226,7 +226,9 @@ export default {
       hotSkuList: [],
       nodeCollectList: [],
       regionCollect: {},
-      amountCollect: {}
+      amountCollect: {},
+      chartsTimeS: '',
+      chartsTimeE: ''
     }
   },
   computed: {
@@ -246,6 +248,7 @@ export default {
   },
   created() {
     dayjs.extend(weekday)
+    this.getWeekData()
   },
   mounted() {
     this.getOrderAmount()
@@ -308,37 +311,92 @@ export default {
       })
     },
     // 设置一周的开始为周一???
+    getEcharts2(xAxis, series) {
+      this.$nextTick(() => {
+        const myChart = echarts.init(document.getElementById('regionCollect'))
+        myChart.setOption({
+          title: {
+            text: '销售额趋势图',
+            left: 'center'
+          },
+          xAxis: {
+            type: 'category',
+            data: xAxis
+          },
+          yAxis: {
+            type: 'value'
+          },
+          series: [
+            {
+              data: series.map(item => { return item / 100 }),
+              type: 'line',
+              smooth: true
+
+            }
+          ]
+        })
+      })
+    },
+    getEcharts1(series, xAxis) {
+      const myChart = echarts.init(document.getElementById('amountCollect'))
+      myChart.setOption({
+        title: {
+          text: '销售额分布',
+          left: 'center'
+        },
+        xAxis: {
+          type: 'category',
+          data: xAxis
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: series.map(item => { return item / 100 }),
+            type: 'bar'
+
+          }
+        ] })
+    },
     async getRegionCollect(start, end) {
       const { data } = await getRegionCollect(start, end)
       this.regionCollect = data
-      console.log(this.regionCollect)
+      // console.log(this.regionCollect)
+      this.getEcharts1(data.series, data.xAxis)
     },
     async getAmountCollect(collectType, start, end) {
       const { data } = await getAmountCollect(collectType, start, end)
       this.amountCollect = data
-      console.log(this.amountCollect)
+      this.getEcharts2(data.xAxis, data.series)
+      // console.log(this.amountCollect)
     },
     async  getWeekData() {
-      console.log(dayjs().weekday(1).format('YYYY-MM-DD'))
+      // console.log(dayjs().weekday(1).format('YYYY-MM-DD'))
       const start = dayjs().startOf('week').format('YYYY-MM-DD')
       const end = dayjs().startOf('day').format('YYYY-MM-DD')
+      this.chartsTimeS = start
+      this.chartsTimeE = end
       // console.log(start, end)
-      this.getRegionCollect(start, end)
-      this.getAmountCollect(1, start, end)
-
+      await this.getRegionCollect(start, end)
+      await this.getAmountCollect(1, start, end)
       this.isChecked = 1
     },
-    getMonthData() {
+    async getMonthData() {
       const start = dayjs().startOf('month').format('YYYY-MM-DD')
       const end = dayjs().startOf('day').format('YYYY-MM-DD')
-      this.getRegionCollect(start, end)
+      this.chartsTimeS = start
+      this.chartsTimeE = end
+      await this.getRegionCollect(start, end)
       this.getAmountCollect(1, start, end)
       this.isChecked = 2
     },
-    getYearData() {
+    async getYearData() {
       const start = dayjs().startOf('year').format('YYYY-MM-DD')
       const end = dayjs().startOf('day').format('YYYY-MM-DD')
-      this.getRegionCollect(start, end)
+      this.chartsTimeS = start
+      this.chartsTimeE = end
+      await this.getRegionCollect(start, end)
       this.getAmountCollect(1, start, end)
       this.isChecked = 3
     }
