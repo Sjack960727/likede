@@ -1,6 +1,10 @@
 <template>
   <div class="app-container">
-    <Banner :form-inline="formInline" />
+    <Banner :form-inline="formInline">
+      <template #userSearch>
+        <el-input v-model="bannerForm.userSearch" placeholder="请输入" />
+      </template>
+    </Banner>
     <div class="result">
       <el-row :gutter="10" style="height:100px">
         <el-button
@@ -41,9 +45,10 @@ export default {
     return {
       loading: false,
       formInline: {
-        value: 'input',
-        item: '<el-input>',
-        index: ''
+        userSearch: '人员搜索'
+      },
+      bannerForm: {
+        userSearch: ''
       },
       page: {
         pageIndex: 1,
@@ -63,7 +68,7 @@ export default {
   methods: {
     async getUserList() {
       const { data } = await getUserList(this.page)
-      console.log(data)
+      // console.log(data)
       this.currentPage = +data.pageIndex
       this.pageSize = +data.pageSize
       this.total = +data.totalCount
@@ -73,7 +78,7 @@ export default {
     async currentChange() {
       // console.log(this.currentPage)
       this.page.pageIndex = this.currentPage
-      console.log(this.page)
+      // console.log(this.page)
       await this.getUserList()
     },
     delRole(row) {
