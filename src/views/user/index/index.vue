@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <Banner :form-inline="formInline">
+    <Banner :form-inline="formInline" @search="search">
       <template #userSearch>
         <el-input v-model="bannerForm.userSearch" placeholder="请输入" />
       </template>
@@ -90,6 +90,10 @@ export default {
     addRole() {
       console.log('新增')
       this.dialogVisible = true
+    },
+    search() {
+      this.page.userName = this.bannerForm.userSearch
+      this.getUserList()
     }
   }
 

@@ -1,6 +1,20 @@
 <template>
   <div class="app-container">
-    <Banner :form-inline="formInline" />
+    <Banner :form-inline="formInline" @search="search">
+      <template #userSearch>
+        <el-input v-model="bannerForm.userSearch" placeholder="请输入" />
+      </template>
+      <template #roleName>
+        <el-select v-model="bannerForm.roleName" clearable placeholder="请选择">
+          <el-option
+            v-for="item in options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </template>
+    </Banner>
     <div class="result">
       <el-table v-loading="loading" :data="userWorkList">
         <el-table-column label="序号" type="index" />
@@ -33,13 +47,24 @@ export default {
   components: { Banner, Page, Details },
   data() {
     return {
+      options: [{
+        value: false,
+        label: '运营员'
+      },
+      {
+        value: true,
+        label: '维修员'
+      }],
+      formInline: {
+        userSearch: '人员搜索',
+        roleName: '角色'
+      },
+      bannerForm: {
+        userSearch: '',
+        roleName: ''
+      },
       dialogVisible: false,
       loading: false,
-      formInline: {
-        value: 'input',
-        item: '<el-input>',
-        index: '1'
-      },
       page: {
         pageIndex: 1,
         pageSize: 10
@@ -108,6 +133,12 @@ export default {
       // this.monthData = this.getTaskReport(row.userId, start2, end)
       // this.yearData = this.getTaskReport(row.userId, start3, end)
       this.dialogVisible = true
+    },
+    search() {
+      this.page.userName = this.bannerForm.userSearch
+      this.page.isRepair = this.bannerForm.roleName
+      // console.log(this.page)
+      this.getUserWork()
     }
   }
 
