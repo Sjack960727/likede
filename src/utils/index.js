@@ -115,3 +115,13 @@ export function param2Obj(url) {
   })
   return obj
 }
+
+export const treeToArray = (tree) => {
+  tree.forEach(ele => {
+    const { sku } = ele
+    Object.keys(sku).forEach(item => {
+      ele[item] = sku[item]
+    })
+  })
+  return tree
+}
