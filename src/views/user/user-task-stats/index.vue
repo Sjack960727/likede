@@ -138,7 +138,7 @@ export default {
     },
     async getRegion() {
       const { data: { currentPageRecords }} = await getRegion()
-      console.log(currentPageRecords)
+      // console.log(currentPageRecords)
       currentPageRecords.forEach(item => {
         this.options.push({
           value: item.id,
