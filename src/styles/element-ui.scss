@@ -15,13 +15,19 @@
   display: none;
 }
 
-
+.el-dialog .el-dialog__header .el-dialog__title{
+  line-height: 22px;
+  font-size: 16px;
+  font-weight: 600;
+}
 // to fixed https://github.com/ElemeFE/element/issues/2461
 .el-dialog {
-  transform: none;
   left: 0;
   position: relative;
   margin: 0 auto;
+  border-radius:10px;
+  width: 630px;
+  margin-top: 15vh;
 }
 
 // refine element ui upload
@@ -46,4 +52,29 @@
 // to fix el-date-picker css style
 .el-range-separator {
   box-sizing: content-box;
+}
+.el-dialog .el-dialog__body{
+  padding: 20px 20px 30px;
+    color: #666;
+}
+
+.el-select{
+  width: 100%;
+}
+
+.el-dialog .el-dialog__footer{
+  padding-top: 0;
+  padding-bottom: 40px;
+}
+
+// .el-card__body{
+//   padding: 0;
+// }
+
+.el-table::before{
+  height: 0px;
+}
+
+.el-input-number{
+  width: 100%;
 }

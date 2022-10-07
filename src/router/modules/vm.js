@@ -9,7 +9,7 @@ export default {
     {
       path: 'index',
       name: 'index',
-      component: () => import('@/views/vm/index/index.vue'),
+      component: () => import('@/views/vm/index'),
       meta: { title: '设备管理' }
     },
     {

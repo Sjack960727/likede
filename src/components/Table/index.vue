@@ -5,6 +5,7 @@
     highlight-current-row
     style="width: 100%;"
     size="medium"
+    @selection-change="selectionChange"
   >
     <el-table-column
       v-if="isSelectionShow"
@@ -21,8 +22,8 @@
     <el-table-column
       v-for="(value,item,index) in labels"
       :key="index"
-      :property="item"
       :label="value"
+      :width="index === Object.keys(labels).length-1 ?lastWidth : ''"
     >
       <template slot-scope="{row}">
         <slot :name="item" :scope="row">{{ label(row,item) }}</slot>
@@ -86,6 +87,10 @@ export default {
     isSelectionShow: {
       type: Boolean,
       default: false
+    },
+    lastWidth: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -101,6 +106,11 @@ export default {
     },
     indexMethod() {
       return (index) => (this.currentPage - 1) * this.pageSize + index + 1
+    }
+  },
+  methods: {
+    selectionChange(selection) {
+      this.$emit('selectionChange', selection)
     }
   }
 }

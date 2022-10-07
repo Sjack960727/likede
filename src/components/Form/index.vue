@@ -115,10 +115,7 @@ export default {
 .el-form-item__label{
   font-weight: 400;
 }
-.form .modfiy-item .el-form-item__content{
-  width: 396px;
-    line-height: 36px;
-}
+
 .col-row-form{
   margin-bottom:0px;
 }
