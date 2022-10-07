@@ -12,14 +12,14 @@
       :model="formData"
     >
       <el-form-item
-        prop="name"
+        prop="userName"
         label="人员名称"
         :rules="[{required:true,message:'人员名称必填',trigger:'blur'}]"
       >
-        <el-input v-model="formData.name" placeholder="请输入" maxlength="5" show-word-limit />
+        <el-input v-model="formData.userName" placeholder="请输入" maxlength="5" show-word-limit />
       </el-form-item>
-      <el-form-item label="角色" prop="roleName" :rules="[{required:true,message:'角色必填',trigger:'blur'}]">
-        <el-select v-model="formData.roleName" clearable placeholder="请选择" style="width:100%">
+      <el-form-item label="角色" prop="roleId" :rules="[{required:true,message:'角色必填',trigger:'blur'}]">
+        <el-select v-model="formData.roleId" clearable placeholder="请选择" style="width:100%">
           <el-option
             v-for="item in options"
             :key="item.value"
@@ -31,8 +31,8 @@
       <el-form-item label="联系电话" prop="mobile" :rules="[{required:true,message:'联系电话必填',trigger:'blur'}]">
         <el-input v-model="formData.mobile" placeholder="请输入" maxlength="11" show-word-limit />
       </el-form-item>
-      <el-form-item label="负责区域" prop="area" :rules="[{required:true}]">
-        <el-select v-model="formData.area" clearable placeholder="请选择" style="width:100%">
+      <el-form-item label="负责区域" prop="regionId" :rules="[{required:true}]">
+        <el-select v-model="formData.regionId" clearable placeholder="请选择" style="width:100%">
           <el-option
             v-for="item in options1"
             :key="item.value"
@@ -41,15 +41,16 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="头像" prop="avatar" :rules="[{required:true}]">
+      <el-form-item label="头像" prop="image" :rules="[{required:true}]">
         <el-upload
           class="avatar-uploader"
           action="https://jsonplaceholder.typicode.com/posts/"
           :show-file-list="false"
           :on-success="handleAvatarSuccess"
           :before-upload="beforeAvatarUpload"
+          accept="image/*"
         >
-          <img v-if="imageUrl" :src="imageUrl" class="avatar">
+          <img v-if="formData.image" :src="formData.image" class="avatar">
           <i v-else class="el-icon-plus avatar-uploader-icon" />
           <div slot="tip" class="el-upload__tip">支持扩展名：jpg、png，文件不得大于100kb</div>
         </el-upload>
@@ -66,32 +67,34 @@
 </template>
 
 <script>
-// import { addRole, updateRole } from '@/api/settings'
-import { getRegion } from '@/api'
+import { getRegion, uploadFile, addUser, editUser } from '@/api'
 
 export default {
   props: {
     dialogVisible: {
       type: Boolean,
-      default: true
+      default: false
     }
   },
   data() {
     return {
       loading: false,
       formData: {
-        name: '',
+        userName: '',
         roleName: '',
+        regionId: '',
+        roleId: '',
         mobile: '',
-        area: '',
-        status: false
+        status: false,
+        image: ''
+
       },
       options: [{
-        value: false,
+        value: 1,
         label: '运营员'
       },
       {
-        value: true,
+        value: 2,
         label: '维修员'
       }],
       options1: [],
@@ -107,12 +110,17 @@ export default {
     this.getRegion()
   },
   methods: {
-    handleClose() {
+    handleClose() { // 关闭前处理
       this.$emit('update:dialogVisible', false)
       this.$refs.roleDialogForm.resetFields()
       this.formData = {
-        name: '',
-        description: ''
+        userName: '',
+        roleName: '',
+        regionId: '',
+        roleId: '',
+        mobile: '',
+        status: false,
+        image: ''
       }
       this.imageUrl = ''
     },
@@ -120,8 +128,16 @@ export default {
       try {
         this.loading = true
         await this.$refs.roleDialogForm.validate()
-        // this.formData.id ? await updateRole(this.formData) : await addRole(this.formData)
-        this.$message.success(this.formData.id ? '编辑成功' : '添加成功')
+        const index = this.options1.findIndex(item => item.value === this.formData.regionId)
+        this.formData.roleName = this.options1[index].label
+        if (this.formData.id) {
+          await editUser(this.formData.id, this.formData)
+          this.$message.success('修改成功')
+        } else {
+          await addUser(this.formData)
+          this.$message.success('添加成功')
+        }
+
         this.$emit('refreshList')
         this.handleClose()
       } catch (error) {
@@ -133,17 +149,22 @@ export default {
     handleAvatarSuccess(res, file) {
       this.imageUrl = URL.createObjectURL(file.raw)
     },
-    beforeAvatarUpload(file) {
-      const isJPG = file.type === 'image/jpeg'
+    async beforeAvatarUpload(file) {
+      const isJPG = file.type === 'image/jpeg' || 'image/png'
       const isLt2M = file.size / 1024 < 100
       if (!isJPG) {
         this.$message.error('上传头像图片只能是 JPG 格式!')
+        return false
       }
       if (!isLt2M) {
         this.$message.error('上传头像图片大小不能超过 100kb!')
+        return false
       }
-      console.log(123)
-      return isJPG && isLt2M
+
+      const fs = new FormData()
+      fs.append('fileName', file)
+      const { data } = await uploadFile(fs)
+      this.formData.image = data
     },
     async getRegion() {
       const { data: { currentPageRecords }} = await getRegion()

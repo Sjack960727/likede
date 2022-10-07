@@ -30,7 +30,7 @@
       </el-table>
       <Page :current-page.sync="currentPage" :page-size="pageSize" :total="total" :total-page="totalPage" @current-change="currentChange" />
     </div>
-    <add-role :dialog-visible.sync="dialogVisible" />
+    <add-role ref="addRole" :dialog-visible.sync="dialogVisible" @refreshList="getUserList" />
   </div>
 </template>
 
@@ -59,7 +59,7 @@ export default {
       pageSize: 0,
       total: 0,
       totalPage: 0,
-      dialogVisible: true
+      dialogVisible: false
     }
   },
   mounted() {
@@ -82,7 +82,7 @@ export default {
       await this.getUserList()
     },
     delRole(row) {
-      console.log('删除', row)
+      // console.log('删除', row)
       this.$notify({
         title: '警告',
         message: '测试系统，暂不可以删除',
@@ -91,9 +91,11 @@ export default {
     },
     editRole(row) {
       console.log('编辑', row)
+      this.dialogVisible = true
+      this.$refs.addRole.formData = { ...row }
     },
     addRole() {
-      console.log('新增')
+      // console.log('新增')
       this.dialogVisible = true
     },
     search() {

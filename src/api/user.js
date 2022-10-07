@@ -50,3 +50,19 @@ export const uploadFile = (data) => {
     data
   })
 }
+
+export const addUser = (data) => {
+  return request({
+    url: '/user-service/user',
+    method: 'POST',
+    data
+  })
+}
+
+export const editUser = (id, data) => {
+  return request({
+    url: `/user-service/user/${id}`,
+    method: 'PUT',
+    data
+  })
+}
