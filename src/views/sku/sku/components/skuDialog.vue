@@ -8,10 +8,37 @@
       {{ title }}
     </div>
     <el-form
+      v-if="title=='数据导入'"
+      ref="classDialogForm"
+      label-width="140px"
+      :v-loadding="loadding"
+    >
+      <el-form-item
+        label="标题："
+      >
+        <el-upload
+          class="upload-demo"
+          action="https://jsonplaceholder.typicode.com/posts/"
+          :on-preview="handlePreview"
+          :on-remove="handleRemove"
+          :before-remove="beforeRemove"
+          multiple
+          :limit="1"
+          :on-exceed="handleExceed"
+          :file-list="fileList"
+          :on-change="handleFiileChange"
+        >
+          <el-button size="small" type="primary" icon="el-icon-upload">上传文件</el-button>
+          <div slot="tip" class="el-upload__tip">支持扩展名：xls、xlsx，文件不得大于1M</div>
+        </el-upload>
+      </el-form-item>
+    </el-form>
+    <el-form
+      v-else
       ref="classDialogForm"
       :model="formData"
       label-width="140px"
-      :loadding="loadding"
+      :v-loadding="loadding"
     >
       <el-form-item
         prop="skuName"
@@ -40,7 +67,6 @@
           :precision="2"
           placeholder="请选择"
           style="width: 100%;"
-          @change="handleChange"
         />
       </el-form-item>
       <el-form-item label="商品类型" prop="skuClass" :rules="[{required:true,message:'请输入商品类型', trigger:'change'}]">
@@ -83,7 +109,7 @@
 </template>
 
 <script>
-import { searchSkuClassAPI, addStuAPI, updatedStuAPI, uploadPic } from '@/api/sku'
+import { searchSkuClassAPI, addStuAPI, updatedStuAPI, uploadPic, updatedSkuList } from '@/api/sku'
 export default {
   props: {
     dialogVisible: {
@@ -108,16 +134,16 @@ export default {
         classId: 0
       },
       // 商品类型信息
-      skuClass: {}
+      skuClass: {},
+      fileList: [],
+      fileName: ''
+
     }
   },
   created() {
     this.searchSkuClass()
   },
   methods: {
-    handleChange(value) {
-      // console.log(value)
-    },
     // 获取商品类型
     async searchSkuClass() {
       const { data } = await searchSkuClassAPI()
@@ -140,6 +166,13 @@ export default {
           throw new Error(error)
         } finally {
           this.loadding = false
+        }
+      } else if (this.title === '数据导入') { // 数据导入
+        try {
+          const res = await updatedSkuList(this.fileName)
+          console.log(res)
+        } catch (error) {
+          throw new Error(error)
         }
       }
       this.$emit('refreshList')
@@ -165,6 +198,24 @@ export default {
         this.$message.error('上传头像图片大小不能超过 100kb!')
       }
       return isJPG && isLt2M
+    },
+    // 数据导入
+    handleRemove(file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview(file) {
+      console.log(file)
+    },
+    handleExceed(files, fileList) {
+      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    beforeRemove(file, fileList) {
+      return this.$confirm(`确定移除 ${file.name}？`)
+    },
+    handleFiileChange(files, fileList) {
+      this.fileName = files.name
+      console.log(files)
+      console.log(fileList)
     }
   }
 
@@ -256,6 +307,19 @@ export default {
     height: 76px;
     display: block;
     margin: 4px;
+  }
+::v-deep  .el-button--primary{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 80px;
+    height: 36px;
+    padding: 0;
+    background-color: #5f84ff;
+    border: none;
+    width: 221px;
+    height: 36px;
+    font-size: 16px;
   }
 
 .dialog-footer{

@@ -6,7 +6,7 @@
       <!-- 新建按钮 -->
       <el-row style="margin-bottom: 20px;">
         <el-col :span="2"><el-button size="medium" type="primary" icon="el-icon-circle-plus-outline" @click="addDialogVisible=true">新建</el-button></el-col>
-        <el-col :span="5"><el-button class="import-date" size="medium" type="primary">导入数据</el-button></el-col>
+        <el-col :span="5"><el-button class="import-date" size="medium" type="primary" @click="importDateVisible=true">导入数据</el-button></el-col>
       </el-row>
       <!-- 商品管理的表格 -->
       <el-table
@@ -81,6 +81,9 @@
     <sku-dialog title="新增商品" :dialog-visible.sync="addDialogVisible" @refreshList="searchSku" />
     <!-- 编辑商品弹出框 -->
     <sku-dialog ref="updateSku" title="修改商品" :dialog-visible.sync="updateDialogVisible" @refreshList="searchSku" />
+    <!-- 数据导入弹出框 -->
+    <sku-dialog title="数据导入" :dialog-visible.sync="importDateVisible" @refreshList="searchSku" />
+
   </div>
 </template>
 
@@ -99,6 +102,7 @@ export default {
     return {
       addDialogVisible: false,
       updateDialogVisible: false,
+      importDateVisible: false,
       // 商品搜索请求参数
       params: {
         pageIndex: 1,

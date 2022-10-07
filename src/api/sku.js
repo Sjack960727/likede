@@ -102,6 +102,11 @@ export const updatedSkuList = (fileName) => {
     }
   })
 }
+/**
+ * 上传图片
+ * @param {*} data
+ * @returns
+ */
 export const uploadPic = (data) => {
   return request({
     url: '/vm-service/sku/fileUpload',
