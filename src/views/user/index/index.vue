@@ -59,7 +59,7 @@ export default {
       pageSize: 0,
       total: 0,
       totalPage: 0,
-      dialogVisible: false
+      dialogVisible: true
     }
   },
   mounted() {
@@ -83,6 +83,11 @@ export default {
     },
     delRole(row) {
       console.log('删除', row)
+      this.$notify({
+        title: '警告',
+        message: '测试系统，暂不可以删除',
+        type: 'warning'
+      })
     },
     editRole(row) {
       console.log('编辑', row)

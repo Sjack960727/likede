@@ -42,3 +42,11 @@ export const getTaskReport = (data) => {
     params: data
   })
 }
+
+export const uploadFile = (data) => {
+  return request({
+    url: '/vm-service/sku/fileUpload',
+    method: 'POST',
+    data
+  })
+}
