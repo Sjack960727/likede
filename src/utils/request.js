@@ -1,7 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import router from '@/router'
-const TimeOut = 3600
+const TimeOut = 3600 * 2
 const request = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   timeout: 5000
