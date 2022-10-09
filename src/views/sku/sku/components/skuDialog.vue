@@ -19,14 +19,12 @@
         <el-upload
           class="upload-demo"
           action="https://jsonplaceholder.typicode.com/posts/"
-          :on-preview="handlePreview"
-          :on-remove="handleRemove"
           :before-remove="beforeRemove"
           multiple
           :limit="1"
-          :on-exceed="handleExceed"
           :file-list="fileList"
-          :on-change="handleFiileChange"
+          :before-upload="beforeFileUpload"
+          accept=".xlsx,.xls"
         >
           <el-button size="small" type="primary" icon="el-icon-upload">上传文件</el-button>
           <div slot="tip" class="el-upload__tip">支持扩展名：xls、xlsx，文件不得大于1M</div>
@@ -69,8 +67,8 @@
           style="width: 100%;"
         />
       </el-form-item>
-      <el-form-item label="商品类型" prop="skuClass" :rules="[{required:true,message:'请输入商品类型', trigger:'change'}]">
-        <el-select v-model="formData.className" placeholder="请选择" style="width: 100%;">
+      <el-form-item label="商品类型" prop="className" :rules="[{required:true,message:'请输入商品类型', trigger:'change'}]">
+        <el-select v-model="formData.className" placeholder="请选择" style="width: 100%;" @focus="searchSkuClass">
           <el-option v-for="item in skuClass" :key="item.classId" v-model="item.className" :label="item.className" />
         </el-select>
       </el-form-item>
@@ -91,7 +89,7 @@
           class="avatar-uploader"
           action="http://likede2-admin.itheima.net/likede/api/vm-service/sku/fileUpload"
           :show-file-list="false"
-          :http-request="beforeAvatarUpload"
+          :http-request="beforePicUpload"
         >
           <img v-if="formData.skuImage" :src="formData.skuImage" class="avatar">
           <i v-else class="el-icon-upload" />
@@ -111,6 +109,7 @@
 <script>
 import { searchSkuClassAPI, addStuAPI, updatedStuAPI, uploadPic, updatedSkuList } from '@/api/sku'
 export default {
+  name: 'SkuDialog',
   props: {
     dialogVisible: {
       type: Boolean,
@@ -134,25 +133,28 @@ export default {
         classId: 0
       },
       // 商品类型信息
-      skuClass: {},
+      skuClass: [],
       fileList: [],
-      fileName: ''
-
+      // 上传文件的请求数据
+      data: {}
     }
-  },
-  created() {
-    this.searchSkuClass()
   },
   methods: {
     // 获取商品类型
     async searchSkuClass() {
-      const { data } = await searchSkuClassAPI()
-      this.skuClass = data.currentPageRecords
+      try {
+        this.loadding = true
+        const { data } = await searchSkuClassAPI()
+        this.skuClass = data.currentPageRecords
+      } finally {
+        this.loadding = false
+      }
     },
     async affirmDialog() {
       this.$refs.classDialogForm.validate()
       if (this.title === '新增商品') {
         try {
+          this.loadding = true
           await addStuAPI(this.formData)
         } catch (error) {
           throw new Error(error)
@@ -161,18 +163,21 @@ export default {
         }
       } else if (this.title === '修改商品') {
         try {
+          this.loadding = true
           await updatedStuAPI(this.formData)
         } catch (error) {
           throw new Error(error)
         } finally {
           this.loadding = false
         }
-      } else if (this.title === '数据导入') { // 数据导入
+      } else if (this.title === '数据导入' && this.data) { // 数据导入
         try {
-          const res = await updatedSkuList(this.fileName)
-          console.log(res)
+          this.loadding = true
+          await updatedSkuList(this.data)
         } catch (error) {
           throw new Error(error)
+        } finally {
+          this.loadding = false
         }
       }
       this.$emit('refreshList')
@@ -181,41 +186,55 @@ export default {
     handleClose() {
       this.$refs.classDialogForm.resetFields()
       this.$emit('update:dialogVisible', false)
+      this.formData = {
+        skuName: '',
+        brandName: '',
+        price: undefined,
+        className: '',
+        unit: '',
+        skuImage: '',
+        classId: 0
+      }
+      this.fileList = []
+      this.skuClass = {}
     },
-    async beforeAvatarUpload(files) {
-      // console.log(files)
+    // 图片上传前的校验
+    async beforePicUpload(files) {
+      const isJPG = files.file.type === 'image/jpeg' || files.file.type === 'image/png'
+      const isLt2M = files.file.size / 1024 < 100
+      if (!isJPG) {
+        this.$message.error('上传头像图片只能是jpg、png格式!')
+        return false
+      }
+      if (!isLt2M) {
+        this.$message.error('上传头像图片大小不能超过 100kb!')
+        return false
+      }
       const fd = new FormData()
       fd.append('fileName', files.file)
       const { data } = await uploadPic(fd)
       this.formData.skuImage = data
-      const isJPG = files.file.type === 'image/jpeg' || 'image/png'
-      const isLt2M = files.file.size / 1024 < 100
-
-      if (!isJPG) {
-        this.$message.error('上传头像图片只能是jpg、png格式!')
+    },
+    // 文件上传前的校验
+    beforeFileUpload(files) {
+      console.log(files)
+      const isXLS = files.type === 'application/vnd.ms-excel'
+      const isXLSX = files.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      const isLt1M = files.size / 1024 < 1024
+      if (!isXLS && !isXLSX) {
+        this.$message.error('上传头像图片只能是xls、xlsx格式!')
+        return false
       }
-      if (!isLt2M) {
-        this.$message.error('上传头像图片大小不能超过 100kb!')
+      if (!isLt1M) {
+        this.$message.error('上传头像图片大小不能超过 1M!')
+        return false
       }
-      return isJPG && isLt2M
-    },
-    // 数据导入
-    handleRemove(file, fileList) {
-      console.log(file, fileList)
-    },
-    handlePreview(file) {
-      console.log(file)
-    },
-    handleExceed(files, fileList) {
-      this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
+      const fd = new FormData()
+      fd.append('fileName', files)
+      this.data = fd
     },
     beforeRemove(file, fileList) {
       return this.$confirm(`确定移除 ${file.name}？`)
-    },
-    handleFiileChange(files, fileList) {
-      this.fileName = files.name
-      console.log(files)
-      console.log(fileList)
     }
   }
 

@@ -93,13 +93,11 @@ export const updatedStuAPI = (data) => {
  * @param {String} fileName
  * @returns
  */
-export const updatedSkuList = (fileName) => {
+export const updatedSkuList = (data) => {
   return request({
     url: '/vm-service/sku/upload',
     method: 'POST',
-    data: {
-      fileName
-    }
+    data
   })
 }
 /**
