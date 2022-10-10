@@ -28,7 +28,7 @@
             :prop="item"
             class="modfiy-item"
           >
-            <slot :name="item"><div>{{ label(formData,item) }}</div></slot>
+            <slot :name="item"><div class="form-item">{{ label(formData,item) }}</div></slot>
           </el-form-item>
         </template>
       </el-form>
@@ -95,6 +95,7 @@ export default {
   methods: {
     handleClose() {
       this.$emit('update:visible', false)
+      this.$emit('close')
       this.$refs.formRef?.resetFields()
     },
     async onConfirm() {
@@ -115,7 +116,9 @@ export default {
 .el-form-item__label{
   font-weight: 400;
 }
-
+.form .modfiy-item .el-form-item__content{
+  width: 396px;
+}
 .col-row-form{
   margin-bottom:0px;
 }
@@ -143,4 +146,11 @@ export default {
     border: none;
     color: #655b56!important;
   }
+  // .form-item{
+  //   height: 40px;
+  //   line-height: 40px;
+  // }
+  // .el-dialog .el-dialog__body .el-form-item .el-form-item__label{
+  //   line-height: 36px;
+  // }
 </style>
