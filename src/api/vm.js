@@ -244,12 +244,14 @@ export const getSales = (start, end, innerCode) => {
   })
 }
 
-export const getIncome = (start, end, innerCode) => {
+export const getIncome = (start, end, innerCode, partnerId = undefined) => {
   return request({
     url: `/order-service/report/orderAmount`,
     params: {
-      start, end,
-      innerCode
+      start,
+      end,
+      innerCode,
+      partnerId
     }
   })
 }
