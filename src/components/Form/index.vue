@@ -13,7 +13,7 @@
         <template v-if="inline">
           <el-row>
             <el-col v-for="(value,item,index) in formLabels" :key="index" :span="12">
-              <el-form-item :label="value" label-width="120px" class="col-row-form">
+              <el-form-item :label="value" label-width="110px" class="col-row-form">
                 <slot :name="item"><div>{{ label(formData,item) }}</div></slot>
               </el-form-item>
             </el-col>
@@ -115,6 +115,14 @@ export default {
 <style lang="scss" >
 .el-form-item__label{
   font-weight: 400;
+  float: left !important;
+}
+.el-form--inline .el-form-item__content{
+  display: block;
+}
+.form .modfiy-item .el-form-item__content{
+  width: 396px;
+  line-height: 36px;
 }
 .form .modfiy-item .el-form-item__content{
   width: 396px;
@@ -122,7 +130,9 @@ export default {
 .col-row-form{
   margin-bottom:0px;
 }
-
+.col-row-form .el-form-item__content{
+  margin-left: 110px;
+}
 .footer-bottom{
   text-align: center;
 }
