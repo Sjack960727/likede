@@ -112,14 +112,14 @@ export default {
 }
 </script>
 
-<style lang="scss" >
+<style lang="scss"  >
 .el-form-item__label{
   font-weight: 400;
   float: left !important;
 }
-.el-form--inline .el-form-item__content{
-  display: block;
-}
+//  .el-form--inline .el-form-item__content{
+//   display: block !important;
+// }
 .form .modfiy-item .el-form-item__content{
   width: 396px;
   line-height: 36px;
